@@ -1,0 +1,28 @@
+:host {
+  padding: 5px;
+  border-radius: 5px;
+  background-color: var(--ion-item-background);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.banner {
+  aspect-ratio: 1 / 1;
+  background-color: rebeccapurple;
+  border-radius: 2px;
+}
+.text-container {
+  display: flex;
+  flex-direction: column;
+  padding-top: 10px;
+}
+.name {
+  text-transform: capitalize;
+}
+.target {
+  text-transform: capitalize;
+  opacity: 0.6;
+  text-align: end;
+  font-size: 0.9rem;
+}

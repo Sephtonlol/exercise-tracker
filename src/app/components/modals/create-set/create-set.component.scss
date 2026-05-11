@@ -1,0 +1,41 @@
+.stats-container {
+  display: flex;
+  gap: 10px;
+}
+
+.stat-field {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid var(--ion-color-medium-tint);
+  border-radius: 4px;
+
+  &:focus-within {
+    border-color: var(--ion-color-primary);
+  }
+}
+
+ion-input {
+  flex: 1;
+
+  &::part(native) {
+    text-align: center;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  &::part(placeholder) {
+    opacity: 1;
+  }
+
+  &::part(container) {
+    border: 0;
+    box-shadow: none;
+  }
+}
+
+.stat-field span {
+  white-space: nowrap;
+}

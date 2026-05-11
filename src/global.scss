@@ -34,4 +34,19 @@
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import '@ionic/angular/css/palettes/dark.system.css';
+@import "@ionic/angular/css/palettes/dark.system.css";
+
+.main-container {
+  margin: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+ion-input,
+ion-select {
+  --highlight-color-valid: var(--ion-color-primary);
+}
+ion-title,
+ion-button {
+  text-transform: capitalize;
+}

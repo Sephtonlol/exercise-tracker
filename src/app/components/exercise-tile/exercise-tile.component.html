@@ -1,0 +1,29 @@
+<div class="banner"></div>
+
+<div class="text-container">
+  <span class="name">
+    {{ exercise.name }}
+  </span>
+  <span class="target">
+    {{ exercise.target }}
+  </span>
+</div>
+<ion-modal
+  #modal
+  trigger="open-exercise-{{ exercise.id }}"
+  (willPresent)="onWillPresent()"
+>
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>{{ exercise.name ? exercise.name : "Exercise" }} </ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="modal.dismiss()"> Close </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ion-nav #nav></ion-nav>
+    </ion-content>
+  </ng-template>
+</ion-modal>

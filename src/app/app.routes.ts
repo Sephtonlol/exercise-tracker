@@ -10,4 +10,9 @@ export const routes: Routes = [
     redirectTo: 'home',
     pathMatch: 'full',
   },
+  {
+    path: 'settings',
+    loadComponent: () =>
+      import('./settings/settings.page').then((m) => m.SettingsPage),
+  },
 ];
