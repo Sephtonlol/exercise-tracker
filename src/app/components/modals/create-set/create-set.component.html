@@ -1,14 +1,24 @@
 <div class="main-container">
   <div class="stats-container">
     <div class="stat-field">
-      <ion-input fill="clear" placeholder="0" type="number"></ion-input>
+      <ion-input
+        fill="clear"
+        [placeholder]="weightPlaceholder.toString()"
+        type="number"
+        [(ngModel)]="weight"
+      ></ion-input>
       <span>kg</span>
     </div>
 
     <div class="stat-field">
-      <ion-input fill="clear" placeholder="0" type="number"></ion-input>
+      <ion-input
+        fill="clear"
+        [placeholder]="repetitionsPlaceholder.toString()"
+        type="number"
+        [(ngModel)]="repetitions"
+      ></ion-input>
       <span>reps</span>
     </div>
   </div>
-  <ion-button expand="block">Save</ion-button>
+  <ion-button expand="block" (click)="createSet()">Save</ion-button>
 </div>

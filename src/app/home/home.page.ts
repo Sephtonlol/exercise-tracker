@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, DestroyRef, ViewChild } from '@angular/core';
 import {
   IonHeader,
   IonToolbar,
@@ -15,6 +15,7 @@ import {
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { add } from 'ionicons/icons';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CreateExerciseComponent } from '../components/modals/create-exercise/create-exercise.component';
 import { Exercises } from '../services/exercises';
 import { Exercise } from '../interfaces/exercise.interface';
@@ -41,16 +42,22 @@ import { ExerciseTileComponent } from '../components/exercise-tile/exercise-tile
 })
 export class HomePage {
   gridColumns = 2;
+  exercises: Exercise[] = [];
 
-  constructor(private exercisesService: Exercises) {
+  constructor(
+    private exercisesService: Exercises,
+    private destroyRef: DestroyRef,
+  ) {
     addIcons({
       add,
     });
-    this.exercises = exercisesService.getExercises();
+    this.exercisesService.exercises$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((exercises) => {
+        this.exercises = exercises;
+      });
   }
   @ViewChild('nav') private nav!: IonNav;
-
-  exercises!: Exercise[];
 
   onWillPresent() {
     this.nav.setRoot(CreateExerciseComponent);

@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Set } from '../interfaces/sets.interface';
 
 @Injectable({
@@ -7,7 +8,19 @@ import { Set } from '../interfaces/sets.interface';
 export class Sets {
   private readonly STORAGE_KEY = 'sets';
 
+  private readonly setsSubject = new BehaviorSubject<Set[]>(this.getSets());
+
+  public readonly sets$: Observable<Set[]> = this.setsSubject.asObservable();
+
   constructor() {}
+
+  /**
+   * Emit latest sets
+   */
+  private updateState(sets: Set[]): void {
+    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(sets));
+    this.setsSubject.next(sets);
+  }
 
   /**
    * Get all sets
@@ -18,14 +31,14 @@ export class Sets {
   }
 
   /**
-   * Get all sets for an exercise
+   * Get sets by exercise
    */
   getSetsByExercise(exerciseId: string): Set[] {
     return this.getSets().filter((set) => set.exerciseId === exerciseId);
   }
 
   /**
-   * Get a single set
+   * Get single set
    */
   getSet(id: string): Set | undefined {
     return this.getSets().find((set) => set.id === id);
@@ -46,7 +59,7 @@ export class Sets {
     const sets = this.getSets();
     sets.push(set);
 
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(sets));
+    this.updateState(sets);
 
     return set;
   }
@@ -56,6 +69,7 @@ export class Sets {
    */
   updateSet(id: string, weight: number, repetitions: number): Set | null {
     const sets = this.getSets();
+
     const set = sets.find((s) => s.id === id);
 
     if (!set) {
@@ -66,7 +80,7 @@ export class Sets {
     set.repetitions = repetitions;
     set.lastUsed = new Date().toISOString();
 
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(sets));
+    this.updateState(sets);
 
     return set;
   }
@@ -76,26 +90,27 @@ export class Sets {
    */
   deleteSet(id: string): boolean {
     const sets = this.getSets();
+
     const filtered = sets.filter((set) => set.id !== id);
 
     if (filtered.length === sets.length) {
       return false;
     }
 
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(filtered));
+    this.updateState(filtered);
 
     return true;
   }
 
   /**
-   * Delete all related sets for exercise
+   * Delete all sets by exercise
    */
   deleteSetsByExercise(exerciseId: string): void {
     const filtered = this.getSets().filter(
       (set) => set.exerciseId !== exerciseId,
     );
 
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(filtered));
+    this.updateState(filtered);
   }
 
   /**

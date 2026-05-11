@@ -32,7 +32,7 @@ export class ExerciseTileComponent implements OnInit {
   @ViewChild('nav') private nav!: IonNav;
 
   onWillPresent() {
-    this.nav.setRoot(ExerciseDetailsComponent);
+    this.nav.setRoot(ExerciseDetailsComponent, { exercise: this.exercise });
   }
 
   @Input() exercise!: Exercise;

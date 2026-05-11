@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Sets } from './sets';
 import { Exercise } from '../interfaces/exercise.interface';
 
@@ -7,6 +8,12 @@ import { Exercise } from '../interfaces/exercise.interface';
 })
 export class Exercises {
   private readonly STORAGE_KEY = 'exercises';
+  private readonly exercisesSubject = new BehaviorSubject<Exercise[]>(
+    this.readExercises(),
+  );
+
+  readonly exercises$: Observable<Exercise[]> =
+    this.exercisesSubject.asObservable();
 
   constructor(private readonly setsService: Sets) {}
 
@@ -14,8 +21,7 @@ export class Exercises {
    * Get all exercises from storage
    */
   getExercises(): Exercise[] {
-    const stored = localStorage.getItem(this.STORAGE_KEY);
-    return stored ? JSON.parse(stored) : [];
+    return [...this.exercisesSubject.value];
   }
 
   /**
@@ -30,10 +36,10 @@ export class Exercises {
       lastUsed: new Date().toISOString(),
     };
 
-    const exercises = this.getExercises();
+    const exercises = [...this.exercisesSubject.value];
     exercises.push(exercise);
 
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(exercises));
+    this.saveExercises(exercises);
 
     return exercise;
   }
@@ -42,7 +48,7 @@ export class Exercises {
    * Update an existing exercise
    */
   updateExercise(id: string, name: string, target: string): Exercise | null {
-    const exercises = this.getExercises();
+    const exercises = [...this.exercisesSubject.value];
     const exercise = exercises.find((ex) => ex.id === id);
 
     if (!exercise) {
@@ -53,7 +59,7 @@ export class Exercises {
     exercise.target = target;
     exercise.lastUsed = new Date().toISOString();
 
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(exercises));
+    this.saveExercises(exercises);
 
     return exercise;
   }
@@ -62,7 +68,7 @@ export class Exercises {
    * Delete an exercise and all related sets
    */
   deleteExercise(id: string): boolean {
-    const exercises = this.getExercises();
+    const exercises = [...this.exercisesSubject.value];
     const index = exercises.findIndex((ex) => ex.id === id);
 
     if (index === -1) {
@@ -71,7 +77,7 @@ export class Exercises {
 
     exercises.splice(index, 1);
 
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(exercises));
+    this.saveExercises(exercises);
 
     this.setsService.deleteSetsByExercise(id);
 
@@ -82,7 +88,7 @@ export class Exercises {
    * Toggle favorite status
    */
   toggleFavorite(id: string): Exercise | null {
-    const exercises = this.getExercises();
+    const exercises = [...this.exercisesSubject.value];
     const exercise = exercises.find((ex) => ex.id === id);
 
     if (!exercise) {
@@ -92,7 +98,7 @@ export class Exercises {
     exercise.favorite = !exercise.favorite;
     exercise.lastUsed = new Date().toISOString();
 
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(exercises));
+    this.saveExercises(exercises);
 
     return exercise;
   }
@@ -109,5 +115,15 @@ export class Exercises {
    */
   private generateId(): string {
     return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  }
+
+  private readExercises(): Exercise[] {
+    const stored = localStorage.getItem(this.STORAGE_KEY);
+    return stored ? JSON.parse(stored) : [];
+  }
+
+  private saveExercises(exercises: Exercise[]): void {
+    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(exercises));
+    this.exercisesSubject.next([...exercises]);
   }
 }

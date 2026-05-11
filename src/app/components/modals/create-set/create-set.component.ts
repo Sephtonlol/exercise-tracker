@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IonButton, IonInput } from '@ionic/angular/standalone';
 import { Sets } from 'src/app/services/sets';
@@ -11,9 +11,11 @@ import { Sets } from 'src/app/services/sets';
   imports: [FormsModule, IonInput, IonButton],
 })
 export class CreateSetComponent {
-  exerciseId = '';
-  weight = 0;
-  repetitions = 0;
+  @Input() exerciseId = '';
+  weight = '';
+  repetitions = '';
+  readonly weightPlaceholder = 0;
+  readonly repetitionsPlaceholder = 0;
 
   constructor(private readonly setsService: Sets) {}
 
@@ -22,9 +24,32 @@ export class CreateSetComponent {
       return;
     }
 
-    this.setsService.createSet(this.exerciseId, this.weight, this.repetitions);
+    const weight = this.resolveNumericInput(
+      this.weight,
+      this.weightPlaceholder,
+    );
+    const repetitions = this.resolveNumericInput(
+      this.repetitions,
+      this.repetitionsPlaceholder,
+    );
 
-    this.weight = 0;
-    this.repetitions = 0;
+    this.setsService.createSet(this.exerciseId, weight, repetitions);
+
+    this.weight = '';
+    this.repetitions = '';
+  }
+
+  private resolveNumericInput(
+    value: string | number,
+    fallback: number,
+  ): number {
+    const stringValue = typeof value === 'string' ? value : String(value ?? '');
+
+    if (stringValue.trim() === '') {
+      return fallback;
+    }
+
+    const parsed = Number(stringValue);
+    return Number.isNaN(parsed) ? fallback : parsed;
   }
 }
