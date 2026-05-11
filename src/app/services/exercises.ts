@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Sets } from './sets';
 import { Exercise } from '../interfaces/exercise.interface';
 
 @Injectable({
@@ -7,7 +8,7 @@ import { Exercise } from '../interfaces/exercise.interface';
 export class Exercises {
   private readonly STORAGE_KEY = 'exercises';
 
-  constructor() {}
+  constructor(private readonly setsService: Sets) {}
 
   /**
    * Get all exercises from storage
@@ -26,10 +27,12 @@ export class Exercises {
       name,
       target,
       favorite: false,
+      lastUsed: new Date().toISOString(),
     };
 
     const exercises = this.getExercises();
     exercises.push(exercise);
+
     localStorage.setItem(this.STORAGE_KEY, JSON.stringify(exercises));
 
     return exercise;
@@ -48,13 +51,15 @@ export class Exercises {
 
     exercise.name = name;
     exercise.target = target;
+    exercise.lastUsed = new Date().toISOString();
+
     localStorage.setItem(this.STORAGE_KEY, JSON.stringify(exercises));
 
     return exercise;
   }
 
   /**
-   * Delete an exercise
+   * Delete an exercise and all related sets
    */
   deleteExercise(id: string): boolean {
     const exercises = this.getExercises();
@@ -65,13 +70,16 @@ export class Exercises {
     }
 
     exercises.splice(index, 1);
+
     localStorage.setItem(this.STORAGE_KEY, JSON.stringify(exercises));
+
+    this.setsService.deleteSetsByExercise(id);
 
     return true;
   }
 
   /**
-   * Toggle favorite status of an exercise
+   * Toggle favorite status
    */
   toggleFavorite(id: string): Exercise | null {
     const exercises = this.getExercises();
@@ -82,20 +90,22 @@ export class Exercises {
     }
 
     exercise.favorite = !exercise.favorite;
+    exercise.lastUsed = new Date().toISOString();
+
     localStorage.setItem(this.STORAGE_KEY, JSON.stringify(exercises));
 
     return exercise;
   }
 
   /**
-   * Get a single exercise by ID
+   * Get exercise by ID
    */
   getExercise(id: string): Exercise | undefined {
     return this.getExercises().find((ex) => ex.id === id);
   }
 
   /**
-   * Generate a unique ID for exercises
+   * Generate unique ID
    */
   private generateId(): string {
     return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;

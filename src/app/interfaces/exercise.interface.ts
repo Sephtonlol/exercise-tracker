@@ -3,4 +3,5 @@ export interface Exercise {
   name: string;
   target: string;
   favorite: boolean;
+  lastUsed: string;
 }

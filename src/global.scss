@@ -44,7 +44,8 @@
 }
 ion-input,
 ion-select {
-  --highlight-color-valid: var(--ion-color-primary);
+  --highlight-color-valid: var(--ion-color-primary) !important;
+  --highlight-color: var(--ion-color-primary) !important;
 }
 ion-title,
 ion-button {

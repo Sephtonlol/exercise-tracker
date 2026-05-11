@@ -25,7 +25,6 @@ import { ExerciseDetailsComponent } from '../modals/exercise-details/exercise-de
     IonButton,
     IonContent,
     IonNav,
-    ExerciseDetailsComponent,
   ],
 })
 export class ExerciseTileComponent implements OnInit {

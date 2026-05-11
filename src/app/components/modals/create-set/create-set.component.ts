@@ -1,14 +1,30 @@
-import { Component, OnInit } from '@angular/core';
-import { IonInput } from '@ionic/angular/standalone';
+import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { IonButton, IonInput } from '@ionic/angular/standalone';
+import { Sets } from 'src/app/services/sets';
 
 @Component({
   selector: 'app-create-set',
+  standalone: true,
   templateUrl: './create-set.component.html',
   styleUrls: ['./create-set.component.scss'],
-  imports: [IonInput],
+  imports: [FormsModule, IonInput, IonButton],
 })
-export class CreateSetComponent implements OnInit {
-  constructor() {}
+export class CreateSetComponent {
+  exerciseId = '';
+  weight = 0;
+  repetitions = 0;
 
-  ngOnInit() {}
+  constructor(private readonly setsService: Sets) {}
+
+  createSet(): void {
+    if (!this.exerciseId) {
+      return;
+    }
+
+    this.setsService.createSet(this.exerciseId, this.weight, this.repetitions);
+
+    this.weight = 0;
+    this.repetitions = 0;
+  }
 }
